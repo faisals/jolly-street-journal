@@ -16,15 +16,15 @@
 .image-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    padding: 1rem;
+    gap: 1.5rem;
+    padding: 1.5rem;
 }
 
 .image-container {
     position: relative;
     border-radius: 8px;
     overflow: hidden;
-    aspect-ratio: 1;
+    aspect-ratio: 16/9;
     width: 100%;
 }
 
@@ -92,7 +92,7 @@
 }
 
 .modal-dialog.modal-lg {
-    max-width: min(90%, 1200px);
+    max-width: min(95%, 1400px);
 }
 
 .error-container {

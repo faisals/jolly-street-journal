@@ -50,23 +50,23 @@ Write ONLY 2-3 sentences summarizing the story with gentle humor while maintaini
 Now create EXACTLY 4 comic panel descriptions, each in its own XML tag:
 
 <image_prompt1>
-Write ONLY a clear, detailed scene description for Panel 1 (Opening): Introduce key characters and setting. MUST include "in the style of garfield-strip" and describe specific expressions, poses, and environment.
+Write ONLY a clear, detailed scene description for Panel 1 (Opening): Introduce key characters and setting. MUST include "A black and white stick figure comic panel in XKCD style.The linework should be simple and clean, typical of XKCD comics." and describe specific expressions, poses, and environment.
 </image_prompt1>
 
 <image_prompt2>
-Write ONLY a clear, detailed scene description for Panel 2 (Action): Show the main conflict or event unfolding. MUST include "in the style of garfield-strip" and describe specific movements, reactions, and tension.
+Write ONLY a clear, detailed scene description for Panel 2 (Action): Show the main conflict or event unfolding. MUST include "A black and white stick figure comic panel in XKCD style.The linework should be simple and clean, typical of XKCD comics." and describe specific movements, reactions, and tension.
 </image_prompt2>
 
 <image_prompt3>
-Write ONLY a clear, detailed scene description for Panel 3 (Reaction): Show emotional responses or consequences. MUST include "in the style of garfield-strip" and describe specific character reactions and environmental details.
+Write ONLY a clear, detailed scene description for Panel 3 (Reaction): Show emotional responses or consequences. MUST include "A black and white stick figure comic panel in XKCD style.The linework should be simple and clean, typical of XKCD comics." and describe specific character reactions and environmental details.
 </image_prompt3>
 
 <image_prompt4>
-Write ONLY a clear, detailed scene description for Panel 4 (Conclusion): Show the story's resolution with a comedic twist. MUST include "in the style of garfield-strip" and describe specific final poses and expressions.
+Write ONLY a clear, detailed scene description for Panel 4 (Conclusion): Show the story's resolution with a comedic twist. MUST include "A black and white stick figure comic panel in XKCD style.The linework should be simple and clean, typical of XKCD comics." and describe specific final poses and expressions.
 </image_prompt4>
 
 CRITICAL RULES:
-- Each image prompt MUST include the phrase "in the style of garfield-strip"
+- Each image prompt MUST include the phrase "A black and white stick figure comic panel in XKCD style.The linework should be simple and clean, typical of XKCD comics."
 - Keep each prompt under 75 words
 - Use specific visual descriptions (poses, expressions, actions)
 - Maintain consistent characters across all panels
