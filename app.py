@@ -56,6 +56,21 @@ with app.app_context():
 def index():
     return render_template('index.html')
 
+@app.route('/api/refresh', methods=['POST'])
+def refresh_articles():
+    try:
+        fetch_and_process_articles()
+        return jsonify({
+            "success": True,
+            "message": "Articles refresh triggered successfully"
+        })
+    except Exception as e:
+        logger.error(f"Failed to refresh articles: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Failed to refresh articles: {str(e)}"
+        }), 500
+
 @app.route('/api/news/<int:page>')
 def get_news_page(page):
     try:
