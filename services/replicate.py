@@ -7,8 +7,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 DEFAULT_IMAGE_URL = "https://placehold.co/768x768?text=Comic+News"
-DEFAULT_IMAGE_URLS = [DEFAULT_IMAGE_URL] * 3
-DEFAULT_PROMPTS = ["No prompt available"] * 3
+DEFAULT_IMAGE_URLS = [DEFAULT_IMAGE_URL] * 4  # Updated to 4 images
+DEFAULT_PROMPTS = ["No prompt available"] * 4  # Updated to 4 prompts
 
 def validate_api_key(api_token):
     if not api_token or api_token == "test":
@@ -29,16 +29,17 @@ def generate_images(summary, prompts=None):
         client = replicate.Client(api_token=api_token)
         
         # Use provided prompts or generate default styles
-        if not prompts or len(prompts) < 3:
+        if not prompts or len(prompts) < 4:  # Updated to check for 4 prompts
             prompts = [
                 f"{summary} in the style of garfield-strip with vibrant colors",
                 f"{summary} in the style of garfield-strip with dramatic lighting",
-                f"{summary} in the style of garfield-strip with dynamic composition"
+                f"{summary} in the style of garfield-strip with dynamic composition",
+                f"{summary} in the style of garfield-strip with cinematic framing"
             ]
             logger.info("Using default prompt styles as no custom prompts provided")
         
         logger.info("Generated prompts for image creation:")
-        for idx, prompt in enumerate(prompts[:3], 1):
+        for idx, prompt in enumerate(prompts[:4], 1):  # Updated to use 4 prompts
             logger.info(f"Prompt {idx}: {prompt}")
         
         model_params = {
@@ -57,8 +58,8 @@ def generate_images(summary, prompts=None):
         logger.info(f"Using model parameters: {json.dumps(model_params, indent=2)}")
         
         image_urls = []
-        for idx, prompt in enumerate(prompts[:3]):  # Limit to 3 images
-            logger.info(f"Generating image {idx + 1}/3 with prompt: {prompt}")
+        for idx, prompt in enumerate(prompts[:4]):  # Updated to generate 4 images
+            logger.info(f"Generating image {idx + 1}/4 with prompt: {prompt}")
             
             model_params["prompt"] = prompt
             output = client.run(
@@ -79,7 +80,7 @@ def generate_images(summary, prompts=None):
             return json.dumps(DEFAULT_IMAGE_URLS), json.dumps(DEFAULT_PROMPTS)
             
         logger.info(f"Successfully generated all {len(image_urls)} images")
-        return json.dumps(image_urls), json.dumps(prompts[:3])
+        return json.dumps(image_urls), json.dumps(prompts[:4])  # Updated to return 4 prompts
         
     except replicate.exceptions.ReplicateError as e:
         logger.error(f"Replicate API error: {str(e)}")
