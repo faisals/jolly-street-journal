@@ -103,8 +103,21 @@
     max-width: 350px;
 }
 
-/* Make modal content scrollable if needed */
 .modal-body {
     max-height: 80vh;
     overflow-y: auto;
+}
+
+.comic-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: var(--bs-primary);
+}
+
+.comic-summary {
+    font-size: 1.1rem;
+    text-align: center;
+    color: var(--bs-light);
+    font-style: italic;
 }

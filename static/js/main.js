@@ -48,9 +48,13 @@ function showArticleDetails(article) {
         
         const modal = document.getElementById('articleModal');
         const title = modal.querySelector('.modal-title');
+        const comicHeader = modal.querySelector('.comic-header');
+        const comicSummary = modal.querySelector('.comic-summary');
         const imageGrid = modal.querySelector('.image-grid');
         
         title.textContent = validatedArticle.title;
+        comicHeader.textContent = validatedArticle.comic_header;
+        comicSummary.textContent = validatedArticle.summary;
         imageGrid.innerHTML = '';
         
         validatedArticle.images.forEach((imageUrl, index) => {

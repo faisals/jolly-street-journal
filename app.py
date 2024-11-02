@@ -113,6 +113,7 @@ def get_news_page(page):
                     
                 processed_articles.append({
                     'title': article.title,
+                    'comic_header': article.comic_header,  # Add this
                     'summary': article.comic_summary,
                     'images': images,
                     'prompts': prompts
