@@ -58,6 +58,9 @@ def generate_images(summary, prompts=None):
             else:
                 image_urls.append(DEFAULT_IMAGE_URL)
         
+        if not all(image_urls):
+            return json.dumps(DEFAULT_IMAGE_URLS), json.dumps(DEFAULT_PROMPTS)
+            
         logger.info(f"Successfully generated {len(image_urls)} images")
         return json.dumps(image_urls), json.dumps(prompts[:3])
         

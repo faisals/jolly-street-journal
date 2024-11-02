@@ -4,6 +4,7 @@ from models import db, Article
 from services.guardian import get_news
 from services.claude import get_comic_summary
 from services.replicate import generate_images
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,10 @@ def fetch_and_process_articles():
                 
             summary = get_comic_summary(article_data['text'])
             image_urls, image_prompts = generate_images(summary)
+
+            # Ensure proper JSON serialization
+            image_urls = json.dumps(json.loads(image_urls) if image_urls else [])
+            image_prompts = json.dumps(json.loads(image_prompts) if image_prompts else [])
             
             article = Article(
                 guardian_id=article_data['id'],
