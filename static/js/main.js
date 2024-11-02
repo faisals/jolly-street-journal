@@ -2,6 +2,18 @@ let currentPage = 1;
 let loading = false;
 let hasMore = true;
 
+function showError(message) {
+    const container = document.getElementById('articles-container');
+    const errorAlert = document.createElement('div');
+    errorAlert.className = 'alert alert-danger alert-dismissible fade show w-100';
+    errorAlert.role = 'alert';
+    errorAlert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    container.insertBefore(errorAlert, container.firstChild);
+}
+
 async function loadArticles() {
     if (loading || !hasMore) return;
     
@@ -14,7 +26,7 @@ async function loadArticles() {
         const data = await response.json();
 
         if (!data.success) {
-            throw new Error(data.error);
+            throw new Error(data.error || 'Unknown error occurred');
         }
 
         const articles = data.articles;
@@ -26,8 +38,8 @@ async function loadArticles() {
         renderArticles(articles);
         currentPage++;
     } catch (error) {
-        console.error('Error loading articles:', error);
-        alert('Failed to load articles. Please try again later.');
+        console.error('Error loading articles:', error.message);
+        showError(`Failed to load articles: ${error.message}`);
     } finally {
         loading = false;
         loadingEl.classList.add('d-none');
