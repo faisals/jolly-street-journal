@@ -19,16 +19,30 @@ def get_comic_summary(text):
         client = anthropic.Client(api_key=api_key)
         
         prompt = f"""
-        Please create a humorous summary of this news article. Keep it light and entertaining while maintaining the key points:
-        
+        You are a witty comic strip writer for a digital news portal. Review this news article and create three components:
+
+        Article text:
         {text}
-        
-        Write a summary in about 3-4 sentences with a comedic twist.
+
+        Please provide your response in exactly this format with these three components:
+
+        1. HEADER: Create a short, punchy, comic-style headline (max 10 words) that captures the essence of the story in a humorous way. Use wordplay, puns, or classic comic exclamations where appropriate.
+
+        2. SUMMARY: Write a 3-4 sentence summary that maintains journalistic accuracy but adds a light, humorous twist. The tone should be similar to The Onion but less satirical - focus on clever observations and gentle humor rather than satire.
+
+        3. IMAGE PROMPT: Create a detailed prompt for an AI image generator to create a comic-style illustration. The prompt should:
+        - Start with "Create a comic-style illustration:"
+        - Specify key visual elements, characters, and their actions
+        - Include art style references (e.g., "in the style of classic Sunday comics")
+        - Add relevant artistic details (lighting, composition, etc.)
+        - Keep it focused and concise (max 100 words)
+
+        Separate each component with double newlines.
         """
         
         response = client.messages.create(
             model="claude-3-sonnet-20240229",
-            max_tokens=300,
+            max_tokens=500,
             messages=[{"role": "user", "content": prompt}]
         )
         
