@@ -25,8 +25,12 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # API Keys
 app.config["GUARDIAN_API_KEY"] = os.environ.get("GUARDIAN_API_KEY", "test")
+app.config["NYTIMES_API_KEY"] = os.environ.get("NYTIMES_API_KEY", "test")
 app.config["CLAUDE_API_KEY"] = os.environ.get("CLAUDE_API_KEY", "test")
 app.config["REPLICATE_API_KEY"] = os.environ.get("REPLICATE_API_KEY", "test")
+
+# Default news source
+app.config["NEWS_SOURCE"] = os.environ.get("NEWS_SOURCE", "guardian")
 
 # Scheduler config
 app.config['SCHEDULER_API_ENABLED'] = True
@@ -90,12 +94,25 @@ def get_news_page(page):
                 "articles": []
             })
             
-        processed_articles = [{
-            'title': article.title,
-            'summary': article.comic_summary,
-            'images': json.loads(article.image_urls) if article.image_urls else [],
-            'prompts': json.loads(article.image_prompts) if article.image_prompts else []
-        } for article in articles.items]
+        processed_articles = []
+        for article in articles.items:
+            try:
+                images = json.loads(article.image_urls) if article.image_urls else []
+                prompts = json.loads(article.image_prompts) if article.image_prompts else []
+                
+                if not images or not prompts:
+                    logger.warning(f"Article {article.id} has missing images or prompts")
+                    continue
+                    
+                processed_articles.append({
+                    'title': article.title,
+                    'summary': article.comic_summary,
+                    'images': images,
+                    'prompts': prompts
+                })
+            except (json.JSONDecodeError, TypeError) as e:
+                logger.error(f"Failed to process article {article.id}: {str(e)}")
+                continue
         
         return jsonify({
             "success": True,

@@ -3,7 +3,8 @@ from datetime import datetime
 
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    guardian_id = db.Column(db.String(200), unique=True)
+    source_id = db.Column(db.String(200), unique=True)  # Changed from guardian_id
+    source = db.Column(db.String(50), default='guardian')  # Added source field
     title = db.Column(db.String(500))
     original_text = db.Column(db.Text)
     comic_summary = db.Column(db.Text)

@@ -1,7 +1,8 @@
 import logging
 from datetime import datetime, timedelta
 from models import db, Article
-from services.guardian import get_news
+from services.guardian import get_news as get_guardian_news
+from services.nytimes import get_news as get_nytimes_news
 from services.claude import get_comic_summary
 from services.replicate import generate_images
 import json
@@ -12,29 +13,30 @@ def fetch_and_process_articles():
     """Background job to fetch and process articles"""
     from app import app  # Import app at function level
     
-    def process_article(article_data):
+    def process_article(article_data, source):
         """Process a single article and save to database"""
         try:
             # Check if article already exists
-            existing = Article.query.filter_by(guardian_id=article_data['id']).first()
+            existing = Article.query.filter_by(source_id=article_data['id']).first()
             if existing:
                 logger.info(f"Article {article_data['id']} already exists, skipping")
                 return
                 
             summary = get_comic_summary(article_data['text'])
             image_urls, image_prompts = generate_images(summary)
-
+            
             # Ensure proper JSON serialization
-            image_urls = json.dumps(json.loads(image_urls) if image_urls else [])
-            image_prompts = json.dumps(json.loads(image_prompts) if image_prompts else [])
+            image_urls_json = json.dumps(json.loads(image_urls) if image_urls else [])
+            image_prompts_json = json.dumps(json.loads(image_prompts) if image_prompts else [])
             
             article = Article(
-                guardian_id=article_data['id'],
+                source_id=article_data['id'],
+                source=source,
                 title=article_data['title'],
                 original_text=article_data['text'],
                 comic_summary=summary,
-                image_urls=image_urls,
-                image_prompts=image_prompts
+                image_urls=image_urls_json,
+                image_prompts=image_prompts_json
             )
             
             db.session.add(article)
@@ -64,12 +66,18 @@ def fetch_and_process_articles():
         try:
             logger.info("Starting background article fetch and process job")
             
-            # Fetch first page of articles
-            articles = get_news(page=1)
+            # Get news source from config
+            news_source = app.config.get('NEWS_SOURCE', 'guardian')
+            
+            # Fetch articles based on configured source
+            if news_source == 'nytimes':
+                articles = get_nytimes_news()
+            else:
+                articles = get_guardian_news(page=1)
             
             # Process each article
             for article in articles:
-                process_article(article)
+                process_article(article, news_source)
                 
             # Cleanup old articles
             cleanup_old_articles()
