@@ -1,22 +1,30 @@
 .card {
     transition: transform 0.2s;
+    cursor: pointer;
 }
 
 .card:hover {
     transform: translateY(-5px);
 }
 
+.article-preview-image {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+}
+
 .image-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    padding: 4px;
+    gap: 8px;
+    padding: 8px;
 }
 
 .image-grid img {
     width: 100%;
     aspect-ratio: 1;
     object-fit: cover;
+    border-radius: 4px;
 }
 
 #loading img {
@@ -26,4 +34,19 @@
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+.modal-content {
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+}
+
+.modal-header {
+    border-bottom-color: var(--bs-gray-700);
+}
+
+.comic-summary {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    white-space: pre-line;
 }

@@ -1,6 +1,7 @@
 let currentPage = 1;
 let loading = false;
 let hasMore = true;
+let articleModal;
 
 function showError(message) {
     const container = document.getElementById('articles-container');
@@ -17,6 +18,38 @@ function showError(message) {
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
     container.insertBefore(errorAlert, container.firstChild);
+}
+
+function showArticleDetails(article) {
+    const modal = document.getElementById('articleModal');
+    const title = modal.querySelector('.modal-title');
+    const imageGrid = modal.querySelector('.image-grid');
+    const comicSummary = modal.querySelector('.comic-summary');
+
+    // Set title
+    title.textContent = article.title;
+
+    // Clear and populate image grid
+    imageGrid.innerHTML = '';
+    article.images.forEach((imageUrl, index) => {
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.alt = `${article.title} - Image ${index + 1}`;
+        img.className = 'img-fluid';
+        
+        img.onerror = function() {
+            this.src = 'https://placehold.co/768x768?text=Comic+News';
+            this.alt = 'Failed to load image';
+        };
+        
+        imageGrid.appendChild(img);
+    });
+
+    // Set comic summary
+    comicSummary.textContent = article.summary;
+
+    // Show modal
+    articleModal.show();
 }
 
 async function loadArticles() {
@@ -76,30 +109,32 @@ function renderArticles(articles) {
 
     articles.forEach(article => {
         const clone = template.content.cloneNode(true);
-        const imageGrid = clone.querySelector('.image-grid');
+        const card = clone.querySelector('.article-card');
+        const previewImage = clone.querySelector('.article-preview-image');
         
-        // Add images to the grid
-        article.images.forEach((imageUrl, index) => {
-            const img = document.createElement('img');
-            img.src = imageUrl;
-            img.alt = `${article.title} - Image ${index + 1}`;
-            img.className = 'img-fluid';
-            
-            // Add error handling for images
-            img.onerror = function() {
-                this.src = 'https://placehold.co/768x768?text=Comic+News';
-                this.alt = 'Failed to load image';
-            };
-            
-            imageGrid.appendChild(img);
-        });
+        // Set the preview image (first image only)
+        previewImage.src = article.images[0];
+        previewImage.alt = article.title;
+        previewImage.onerror = function() {
+            this.src = 'https://placehold.co/768x768?text=Comic+News';
+            this.alt = 'Failed to load image';
+        };
         
+        // Set title
         clone.querySelector('.article-title').textContent = article.title;
-        clone.querySelector('.article-summary').textContent = article.summary;
+        
+        // Add click handler
+        card.addEventListener('click', () => showArticleDetails(article));
         
         container.appendChild(clone);
     });
 }
+
+// Initialize modal
+document.addEventListener('DOMContentLoaded', () => {
+    articleModal = new bootstrap.Modal(document.getElementById('articleModal'));
+    loadArticles();
+});
 
 // Infinite scroll with debounce
 let scrollTimeout;
@@ -110,9 +145,4 @@ window.addEventListener('scroll', () => {
             loadArticles();
         }
     }, 100);
-});
-
-// Initial load
-document.addEventListener('DOMContentLoaded', () => {
-    loadArticles();
 });
