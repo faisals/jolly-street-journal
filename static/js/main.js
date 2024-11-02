@@ -4,6 +4,11 @@ let hasMore = true;
 
 function showError(message) {
     const container = document.getElementById('articles-container');
+    const existingError = container.querySelector('.alert');
+    if (existingError) {
+        existingError.remove();
+    }
+    
     const errorAlert = document.createElement('div');
     errorAlert.className = 'alert alert-danger alert-dismissible fade show w-100';
     errorAlert.role = 'alert';
@@ -23,7 +28,13 @@ async function loadArticles() {
 
     try {
         const response = await fetch(`/api/news/${currentPage}`);
-        const data = await response.json();
+        let data;
+        
+        try {
+            data = await response.json();
+        } catch (parseError) {
+            throw new Error('Invalid response format from server');
+        }
 
         if (!response.ok) {
             throw new Error(data.error || `Server error: ${response.status}`);
@@ -35,12 +46,15 @@ async function loadArticles() {
 
         const articles = data.articles;
         if (!Array.isArray(articles)) {
-            throw new Error('Invalid response format');
+            throw new Error('Invalid response format: articles not found');
         }
 
         if (articles.length === 0) {
             hasMore = false;
             loadingEl.classList.add('d-none');
+            if (currentPage === 1) {
+                showError('No articles available at the moment. Please try again later.');
+            }
             return;
         }
 
@@ -49,6 +63,7 @@ async function loadArticles() {
     } catch (error) {
         console.error('Error loading articles:', error.message);
         showError(`Failed to load articles: ${error.message}`);
+        hasMore = false;
     } finally {
         loading = false;
         loadingEl.classList.add('d-none');
@@ -64,18 +79,30 @@ function renderArticles(articles) {
         
         clone.querySelector('.article-title').textContent = article.title;
         clone.querySelector('.article-summary').textContent = article.summary;
-        clone.querySelector('.article-image').src = article.image;
-        clone.querySelector('.article-image').alt = article.title;
+        
+        const img = clone.querySelector('.article-image');
+        img.src = article.image;
+        img.alt = article.title;
+        
+        // Add error handling for images
+        img.onerror = function() {
+            this.src = 'https://placehold.co/768x768?text=Comic+News';
+            this.alt = 'Failed to load image';
+        };
         
         container.appendChild(clone);
     });
 }
 
-// Infinite scroll
+// Infinite scroll with debounce
+let scrollTimeout;
 window.addEventListener('scroll', () => {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
-        loadArticles();
-    }
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+            loadArticles();
+        }
+    }, 100);
 });
 
 // Initial load

@@ -1,7 +1,11 @@
 import os
+import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class Base(DeclarativeBase):
     pass
@@ -37,11 +41,13 @@ def index():
 @app.route('/api/news/<int:page>')
 def get_news_page(page):
     try:
+        logger.info(f"Fetching news page {page}")
         articles = get_news(page)
         processed_articles = []
         
         for article in articles:
             try:
+                logger.info(f"Processing article: {article['id']}")
                 summary = get_comic_summary(article['text'])
                 image_url = generate_image(summary)
                 
@@ -51,25 +57,29 @@ def get_news_page(page):
                     'image': image_url
                 }
                 processed_articles.append(processed_article)
+                logger.info(f"Successfully processed article: {article['id']}")
                 
             except Exception as e:
-                logger.error(f"Error processing article: {str(e)}")
+                logger.error(f"Error processing article {article['id']}: {str(e)}")
                 # Skip failed articles instead of stopping the entire request
                 continue
                 
         if not processed_articles:
+            logger.error("No articles could be processed successfully")
             return jsonify({
                 "success": False,
-                "error": "No articles could be processed successfully"
+                "error": "Failed to process any articles. Please check API keys and try again."
             }), 500
             
+        logger.info(f"Successfully processed {len(processed_articles)} articles")
         return jsonify({
             "success": True,
             "articles": processed_articles
         })
         
     except Exception as e:
+        logger.error(f"Failed to fetch news page {page}: {str(e)}")
         return jsonify({
             "success": False,
-            "error": str(e)
+            "error": f"Failed to fetch news: {str(e)}"
         }), 500
