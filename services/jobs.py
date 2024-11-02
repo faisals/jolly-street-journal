@@ -6,6 +6,7 @@ from services.nytimes import get_news as get_nytimes_news
 from services.claude import get_comic_summary
 from services.replicate import generate_images
 import json
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,18 @@ def fetch_and_process_articles():
             if not summary:
                 logger.error(f"Failed to generate summary for article {article_data['id']}")
                 return
+
+            # Extract comic_header and summary from response
+            comic_header = None
+            comic_summary = None
+            
+            comic_header_match = re.search(r'<comic_header>(.*?)</comic_header>', summary, re.DOTALL)
+            if comic_header_match:
+                comic_header = comic_header_match.group(1).strip()
+                
+            summary_match = re.search(r'<summary>(.*?)</summary>', summary, re.DOTALL)
+            if summary_match:
+                comic_summary = summary_match.group(1).strip()
             
             # Generate images and ensure proper JSON handling
             image_urls, image_prompts = generate_images(summary)
@@ -59,7 +72,8 @@ def fetch_and_process_articles():
                 source=source,
                 title=article_data['title'],
                 original_text=article_data['text'],
-                comic_summary=summary,
+                comic_header=comic_header,
+                comic_summary=comic_summary,  # Use extracted summary
                 image_urls=image_urls_json,
                 image_prompts=prompts_json
             )
