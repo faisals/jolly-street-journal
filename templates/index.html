@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comic News Portal</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Comic News Portal</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div id="articles-container" class="row g-4">
+            <!-- Articles will be loaded here -->
+        </div>
+        <div id="loading" class="text-center my-4 d-none">
+            <img src="/static/img/loading.svg" alt="Loading..." width="50">
+        </div>
+    </div>
+
+    <template id="article-template">
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <img src="" class="card-img-top article-image" alt="Generated Image">
+                <div class="card-body">
+                    <h5 class="card-title article-title"></h5>
+                    <p class="card-text article-summary"></p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
