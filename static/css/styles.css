@@ -1,6 +1,8 @@
 .card {
     transition: transform 0.2s;
     cursor: pointer;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
 }
 
 .card:hover {
@@ -29,7 +31,7 @@
     aspect-ratio: 16/9;
     width: 100%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    background: var(--bs-dark);
+    background: #ffffff;
 }
 
 .image-container img {
@@ -48,8 +50,8 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
+    background: rgba(255, 255, 255, 0.9);
+    color: #212529;
     padding: 1rem;
     font-size: 0.9rem;
     transform: translateY(100%);
@@ -65,7 +67,7 @@
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--bs-dark);
+    background: #ffffff;
     padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -82,12 +84,12 @@
 }
 
 .modal-content {
-    background-color: var(--bs-dark);
-    color: var(--bs-light);
+    background-color: #ffffff;
+    color: #212529;
 }
 
 .modal-header {
-    border-bottom-color: var(--bs-gray-700);
+    border-bottom-color: #dee2e6;
 }
 
 .modal-dialog {
@@ -117,15 +119,23 @@
     font-size: 2rem;
     font-weight: bold;
     text-align: center;
-    color: var(--bs-primary);
+    color: #0d6efd;
     margin-bottom: 1.5rem;
 }
 
 .comic-summary {
     font-size: 1.2rem;
     text-align: center;
-    color: var(--bs-light);
+    color: #212529;
     font-style: italic;
     margin-bottom: 2rem;
     padding: 0 2rem;
+}
+
+.navbar {
+    background-color: #ffffff !important;
+}
+
+.navbar-brand {
+    color: #212529 !important;
 }
