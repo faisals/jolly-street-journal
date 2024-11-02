@@ -20,34 +20,45 @@ function showError(message) {
     container.insertBefore(errorAlert, container.firstChild);
 }
 
-function cleanSummary(summary) {
-    // Split the summary into lines
+function extractImagePrompts(summary) {
     const lines = summary.split('\n');
-    
-    // Filter out IMAGE PROMPT sections and technical details
-    const cleanedLines = lines.filter(line => {
-        const trimmedLine = line.trim();
-        return !trimmedLine.includes('IMAGE PROMPT') && 
-               !trimmedLine.includes('in the style of garfield-strip') &&
-               !trimmedLine.startsWith('Create a comic-style illustration:');
-    });
-    
-    // Join the remaining lines back together
-    return cleanedLines.join('\n').trim();
+    const prompts = [];
+    let currentPrompt = '';
+    let collectingPrompt = false;
+
+    for (const line of lines) {
+        if (line.includes('IMAGE PROMPT')) {
+            collectingPrompt = true;
+            currentPrompt = '';
+        } else if (collectingPrompt && line.trim()) {
+            if (line.includes('in the style of garfield-strip')) {
+                prompts.push(currentPrompt.trim());
+                collectingPrompt = false;
+            } else {
+                currentPrompt += ' ' + line.trim();
+            }
+        }
+    }
+
+    return prompts;
 }
 
 function showArticleDetails(article) {
     const modal = document.getElementById('articleModal');
     const title = modal.querySelector('.modal-title');
     const imageGrid = modal.querySelector('.image-grid');
-    const comicSummary = modal.querySelector('.comic-summary');
 
     // Set title
     title.textContent = article.title;
 
     // Clear and populate image grid
     imageGrid.innerHTML = '';
+    const prompts = extractImagePrompts(article.summary);
+    
     article.images.forEach((imageUrl, index) => {
+        const container = document.createElement('div');
+        container.className = 'image-container';
+        
         const img = document.createElement('img');
         img.src = imageUrl;
         img.alt = `${article.title} - Image ${index + 1}`;
@@ -58,11 +69,14 @@ function showArticleDetails(article) {
             this.alt = 'Failed to load image';
         };
         
-        imageGrid.appendChild(img);
+        const promptDiv = document.createElement('div');
+        promptDiv.className = 'image-prompt';
+        promptDiv.textContent = prompts[index] || 'Image description unavailable';
+        
+        container.appendChild(img);
+        container.appendChild(promptDiv);
+        imageGrid.appendChild(container);
     });
-
-    // Clean and set comic summary
-    comicSummary.textContent = cleanSummary(article.summary);
 
     // Show modal
     articleModal.show();
