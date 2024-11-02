@@ -17,13 +17,15 @@ def validate_api_key(api_token):
     return True
 
 def generate_images(summary, prompts=None):
+    """Generate images using Replicate API with detailed logging"""
     api_token = current_app.config['REPLICATE_API_KEY']
     
     if not validate_api_key(api_token):
+        logger.info("Using default images due to missing API key")
         return json.dumps(DEFAULT_IMAGE_URLS), json.dumps(DEFAULT_PROMPTS)
     
     try:
-        logger.info("Generating images using Replicate API")
+        logger.info("Starting image generation process using Replicate API")
         client = replicate.Client(api_token=api_token)
         
         # Use provided prompts or generate default styles
@@ -33,42 +35,61 @@ def generate_images(summary, prompts=None):
                 f"{summary} in the style of garfield-strip with dramatic lighting",
                 f"{summary} in the style of garfield-strip with dynamic composition"
             ]
+            logger.info("Using default prompt styles as no custom prompts provided")
+        
+        logger.info("Generated prompts for image creation:")
+        for idx, prompt in enumerate(prompts[:3], 1):
+            logger.info(f"Prompt {idx}: {prompt}")
+        
+        model_params = {
+            "prompt": None,  # Will be set in loop
+            "model": "dev",
+            "lora_scale": 1,
+            "num_outputs": 1,
+            "aspect_ratio": "1:1",
+            "output_format": "webp",
+            "guidance_scale": 3.5,
+            "output_quality": 90,
+            "prompt_strength": 0.8,
+            "extra_lora_scale": 1,
+            "num_inference_steps": 28
+        }
+        logger.info(f"Using model parameters: {json.dumps(model_params, indent=2)}")
         
         image_urls = []
-        for prompt in prompts[:3]:  # Limit to 3 images
+        for idx, prompt in enumerate(prompts[:3]):  # Limit to 3 images
+            logger.info(f"Generating image {idx + 1}/3 with prompt: {prompt}")
+            
+            model_params["prompt"] = prompt
             output = client.run(
                 "faisals/jolly-street-journal:41ff8cf9e035e0837c5a8b1b58bee6b8b5a11d9193914d085ada970484831a27",
-                input={
-                    "prompt": prompt,
-                    "model": "dev",
-                    "lora_scale": 1,
-                    "num_outputs": 1,
-                    "aspect_ratio": "1:1",
-                    "output_format": "webp",
-                    "guidance_scale": 3.5,
-                    "output_quality": 90,
-                    "prompt_strength": 0.8,
-                    "extra_lora_scale": 1,
-                    "num_inference_steps": 28
-                }
+                input=model_params
             )
             
             if output and isinstance(output, list) and output[0]:
-                image_urls.append(str(output[0]))
+                image_url = str(output[0])
+                logger.info(f"Successfully generated image {idx + 1}, URL: {image_url}")
+                image_urls.append(image_url)
             else:
+                logger.warning(f"Failed to generate image {idx + 1}, using default image")
                 image_urls.append(DEFAULT_IMAGE_URL)
         
         if not all(image_urls):
+            logger.warning("Some images failed to generate, returning default images")
             return json.dumps(DEFAULT_IMAGE_URLS), json.dumps(DEFAULT_PROMPTS)
             
-        logger.info(f"Successfully generated {len(image_urls)} images")
+        logger.info(f"Successfully generated all {len(image_urls)} images")
         return json.dumps(image_urls), json.dumps(prompts[:3])
         
     except replicate.exceptions.ReplicateError as e:
         logger.error(f"Replicate API error: {str(e)}")
         if "Unauthenticated" in str(e):
             logger.error("Authentication failed - invalid API token")
+        else:
+            logger.error(f"API Error details: {str(e)}")
         return json.dumps(DEFAULT_IMAGE_URLS), json.dumps(DEFAULT_PROMPTS)
     except Exception as e:
         logger.error(f"Unexpected error in generate_images: {str(e)}")
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error details: {str(e)}")
         return json.dumps(DEFAULT_IMAGE_URLS), json.dumps(DEFAULT_PROMPTS)
