@@ -47,6 +47,20 @@ wheels = [
 ]
 
 [[package]]
+name = "apscheduler"
+version = "3.10.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytz" },
+    { name = "six" },
+    { name = "tzlocal" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5e/34/5dcb368cf89f93132d9a31bd3747962a9dc874480e54333b0c09fa7d56ac/APScheduler-3.10.4.tar.gz", hash = "sha256:e6df071b27d9be898e486bc7940a7be50b4af2e9da7c08f0744a96d4bd4cef4a", size = 100832 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/13/b5/7af0cb920a476dccd612fbc9a21a3745fb29b1fcd74636078db8f7ba294c/APScheduler-3.10.4-py3-none-any.whl", hash = "sha256:fb91e8a768632a4756a585f79ec834e0e27aad5860bac7eaa523d9ccefd87661", size = 59303 },
+]
+
+[[package]]
 name = "babel"
 version = "2.16.0"
 source = { registry = "https://pypi.org/simple" }
@@ -232,6 +246,17 @@ sdist = { url = "https://files.pythonhosted.org/packages/41/e1/d104c83026f8d35df
 wheels = [
     { url = "https://files.pythonhosted.org/packages/61/80/ffe1da13ad9300f87c93af113edd0638c75138c42a0994becfacac078c06/flask-3.0.3-py3-none-any.whl", hash = "sha256:34e815dfaa43340d1d15a5c3a02b8476004037eb4840b34910c6e21679d288f3", size = 101735 },
 ]
+
+[[package]]
+name = "flask-apscheduler"
+version = "1.13.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "apscheduler" },
+    { name = "flask" },
+    { name = "python-dateutil" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/26/23/956b5ffbd1b473fa96ad4aa7918cfbf4616b58f4c9de8c9fd52c6ccf9141/Flask-APScheduler-1.13.1.tar.gz", hash = "sha256:b929846f026fb339b76360b0e4fc75da78b75c6d08625715bd0d37949bd607da", size = 12601 }
 
 [[package]]
 name = "flask-sqlalchemy"
@@ -808,6 +833,7 @@ dependencies = [
     { name = "anthropic" },
     { name = "email-validator" },
     { name = "flask" },
+    { name = "flask-apscheduler" },
     { name = "flask-sqlalchemy" },
     { name = "psycopg2-binary" },
     { name = "replicate" },
@@ -819,6 +845,7 @@ requires-dist = [
     { name = "anthropic", specifier = ">=0.38.0" },
     { name = "email-validator", specifier = ">=2.2.0" },
     { name = "flask", specifier = ">=3.0.3" },
+    { name = "flask-apscheduler", specifier = ">=1.13.1" },
     { name = "flask-sqlalchemy", specifier = ">=3.1.1" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "replicate", specifier = ">=1.0.3" },

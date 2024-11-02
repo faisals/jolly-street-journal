@@ -11,4 +11,5 @@ dependencies = [
     "trafilatura>=1.12.2",
     "anthropic>=0.38.0",
     "replicate>=1.0.3",
+    "flask-apscheduler>=1.13.1",
 ]
