@@ -16,18 +16,43 @@ def fetch_and_process_articles():
     def process_article(article_data, source):
         """Process a single article and save to database"""
         try:
-            # Check if article already exists
-            existing = Article.query.filter_by(source_id=article_data['id']).first()
-            if existing:
-                logger.info(f"Article {article_data['id']} already exists, skipping")
+            if not article_data or not isinstance(article_data, dict):
+                logger.error("Invalid article data received")
                 return
-                
+
+            # Check if article already exists
+            existing = Article.query.filter_by(source_id=article_data['id'], source=source).first()
+            if existing:
+                logger.info(f"Article {article_data['id']} from {source} already exists, skipping")
+                return
+            
+            # Generate comic summary
             summary = get_comic_summary(article_data['text'])
+            if not summary:
+                logger.error(f"Failed to generate summary for article {article_data['id']}")
+                return
+            
+            # Generate images and ensure proper JSON handling
             image_urls, image_prompts = generate_images(summary)
             
-            # Ensure proper JSON serialization
-            image_urls_json = json.dumps(json.loads(image_urls) if image_urls else [])
-            image_prompts_json = json.dumps(json.loads(image_prompts) if image_prompts else [])
+            # Parse and validate image URLs and prompts
+            try:
+                image_urls_list = json.loads(image_urls) if isinstance(image_urls, str) else []
+                prompts_list = json.loads(image_prompts) if isinstance(image_prompts, str) else []
+                
+                if not isinstance(image_urls_list, list):
+                    image_urls_list = []
+                if not isinstance(prompts_list, list):
+                    prompts_list = []
+                
+                # Re-serialize as valid JSON strings
+                image_urls_json = json.dumps(image_urls_list)
+                prompts_json = json.dumps(prompts_list)
+                
+            except (json.JSONDecodeError, TypeError) as e:
+                logger.error(f"JSON processing error for article {article_data['id']}: {str(e)}")
+                image_urls_json = json.dumps([])
+                prompts_json = json.dumps([])
             
             article = Article(
                 source_id=article_data['id'],
@@ -36,15 +61,15 @@ def fetch_and_process_articles():
                 original_text=article_data['text'],
                 comic_summary=summary,
                 image_urls=image_urls_json,
-                image_prompts=image_prompts_json
+                image_prompts=prompts_json
             )
             
             db.session.add(article)
             db.session.commit()
-            logger.info(f"Successfully processed and saved article: {article_data['id']}")
+            logger.info(f"Successfully processed and saved article: {article_data['id']} from {source}")
             
         except Exception as e:
-            logger.error(f"Failed to process article {article_data['id']}: {str(e)}")
+            logger.error(f"Failed to process article {article_data.get('id', 'unknown')}: {str(e)}")
             db.session.rollback()
 
     def cleanup_old_articles():
@@ -68,17 +93,26 @@ def fetch_and_process_articles():
             
             # Get news source from config
             news_source = app.config.get('NEWS_SOURCE', 'guardian')
+            logger.info(f"Using news source: {news_source}")
             
             # Fetch articles based on configured source
-            if news_source == 'nytimes':
-                articles = get_nytimes_news()
-            else:
-                articles = get_guardian_news(page=1)
+            articles = []
+            try:
+                articles = get_nytimes_news() if news_source == 'nytimes' else get_guardian_news(page=1)
+            except Exception as e:
+                logger.error(f"Failed to fetch articles from {news_source}: {str(e)}")
+            
+            if not articles:
+                logger.warning(f"No articles returned from {news_source}")
+                return
             
             # Process each article
             for article in articles:
-                process_article(article, news_source)
-                
+                if article and isinstance(article, dict):
+                    process_article(article, news_source)
+                else:
+                    logger.warning(f"Skipping invalid article data: {article}")
+            
             # Cleanup old articles
             cleanup_old_articles()
             
