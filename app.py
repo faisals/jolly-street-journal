@@ -39,8 +39,14 @@ def get_news_page(page):
     try:
         articles = get_news(page)
         for article in articles:
-            article['summary'] = get_comic_summary(article['text'])
-            article['image'] = generate_image(article['summary'])
+            try:
+                article['summary'] = get_comic_summary(article['text'])
+            except Exception as e:
+                article['summary'] = f"Error generating summary: {str(e)}"
+            
+            # Image generation errors are handled within the function now
+            article['image'] = generate_image(article.get('summary', ''))
+            
         return jsonify({"success": True, "articles": articles})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
