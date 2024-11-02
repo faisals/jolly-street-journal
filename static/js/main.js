@@ -20,6 +20,22 @@ function showError(message) {
     container.insertBefore(errorAlert, container.firstChild);
 }
 
+function cleanSummary(summary) {
+    // Split the summary into lines
+    const lines = summary.split('\n');
+    
+    // Filter out IMAGE PROMPT sections and technical details
+    const cleanedLines = lines.filter(line => {
+        const trimmedLine = line.trim();
+        return !trimmedLine.includes('IMAGE PROMPT') && 
+               !trimmedLine.includes('in the style of garfield-strip') &&
+               !trimmedLine.startsWith('Create a comic-style illustration:');
+    });
+    
+    // Join the remaining lines back together
+    return cleanedLines.join('\n').trim();
+}
+
 function showArticleDetails(article) {
     const modal = document.getElementById('articleModal');
     const title = modal.querySelector('.modal-title');
@@ -45,8 +61,8 @@ function showArticleDetails(article) {
         imageGrid.appendChild(img);
     });
 
-    // Set comic summary
-    comicSummary.textContent = article.summary;
+    // Clean and set comic summary
+    comicSummary.textContent = cleanSummary(article.summary);
 
     // Show modal
     articleModal.show();
