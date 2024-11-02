@@ -18,6 +18,8 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
     padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .image-container {
@@ -27,6 +29,7 @@
     aspect-ratio: 1/1;
     width: 100%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: var(--bs-dark);
 }
 
 .image-container img {
@@ -88,8 +91,8 @@
 }
 
 .modal-dialog {
-    max-width: 90%;
-    margin: 1.75rem auto;
+    max-width: 95%;
+    margin: 1rem auto;
 }
 
 .modal-dialog.modal-lg {

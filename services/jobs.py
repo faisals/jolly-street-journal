@@ -33,17 +33,21 @@ def fetch_and_process_articles():
                 logger.error(f"Failed to generate summary for article {article_data['id']}")
                 return
 
-            # Extract comic_header and summary from response
+            # Extract comic_header and summary using regex
             comic_header = None
             comic_summary = None
-            
+
             comic_header_match = re.search(r'<comic_header>(.*?)</comic_header>', summary, re.DOTALL)
             if comic_header_match:
                 comic_header = comic_header_match.group(1).strip()
-                
+
             summary_match = re.search(r'<summary>(.*?)</summary>', summary, re.DOTALL)
             if summary_match:
                 comic_summary = summary_match.group(1).strip()
+
+            if not comic_header or not comic_summary:
+                logger.error(f"Failed to extract comic_header or summary for article {article_data['id']}")
+                return
             
             # Generate images and ensure proper JSON handling
             image_urls, image_prompts = generate_images(summary)
@@ -67,13 +71,14 @@ def fetch_and_process_articles():
                 image_urls_json = json.dumps([])
                 prompts_json = json.dumps([])
             
+            # Create article with extracted values
             article = Article(
                 source_id=article_data['id'],
                 source=source,
                 title=article_data['title'],
                 original_text=article_data['text'],
-                comic_header=comic_header,
-                comic_summary=comic_summary,  # Use extracted summary
+                comic_header=comic_header,  # Store extracted comic_header
+                comic_summary=comic_summary,  # Store extracted summary
                 image_urls=image_urls_json,
                 image_prompts=prompts_json
             )
