@@ -93,7 +93,8 @@ def get_news_page(page):
         processed_articles = [{
             'title': article.title,
             'summary': article.comic_summary,
-            'images': json.loads(article.image_urls)
+            'images': json.loads(article.image_urls),
+            'prompts': json.loads(article.image_prompts)
         } for article in articles.items]
         
         return jsonify({

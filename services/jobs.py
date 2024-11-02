@@ -21,14 +21,15 @@ def fetch_and_process_articles():
                 return
                 
             summary = get_comic_summary(article_data['text'])
-            image_urls = generate_images(summary)
+            image_urls, image_prompts = generate_images(summary)
             
             article = Article(
                 guardian_id=article_data['id'],
                 title=article_data['title'],
                 original_text=article_data['text'],
                 comic_summary=summary,
-                image_urls=image_urls
+                image_urls=image_urls,
+                image_prompts=image_prompts
             )
             
             db.session.add(article)

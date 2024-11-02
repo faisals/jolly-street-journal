@@ -8,4 +8,5 @@ class Article(db.Model):
     original_text = db.Column(db.Text)
     comic_summary = db.Column(db.Text)
     image_urls = db.Column(db.Text)  # Store multiple URLs as JSON string
+    image_prompts = db.Column(db.Text)  # Store prompts as JSON string
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

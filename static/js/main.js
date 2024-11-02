@@ -20,29 +20,6 @@ function showError(message) {
     container.insertBefore(errorAlert, container.firstChild);
 }
 
-function extractImagePrompts(summary) {
-    const lines = summary.split('\n');
-    const prompts = [];
-    let currentPrompt = '';
-    let collectingPrompt = false;
-
-    for (const line of lines) {
-        if (line.includes('IMAGE PROMPT')) {
-            collectingPrompt = true;
-            currentPrompt = '';
-        } else if (collectingPrompt && line.trim()) {
-            if (line.includes('in the style of garfield-strip')) {
-                prompts.push(currentPrompt.trim());
-                collectingPrompt = false;
-            } else {
-                currentPrompt += ' ' + line.trim();
-            }
-        }
-    }
-
-    return prompts;
-}
-
 function showArticleDetails(article) {
     const modal = document.getElementById('articleModal');
     const title = modal.querySelector('.modal-title');
@@ -53,7 +30,6 @@ function showArticleDetails(article) {
 
     // Clear and populate image grid
     imageGrid.innerHTML = '';
-    const prompts = extractImagePrompts(article.summary);
     
     article.images.forEach((imageUrl, index) => {
         const container = document.createElement('div');
@@ -71,7 +47,7 @@ function showArticleDetails(article) {
         
         const promptDiv = document.createElement('div');
         promptDiv.className = 'image-prompt';
-        promptDiv.textContent = prompts[index] || 'Image description unavailable';
+        promptDiv.textContent = article.prompts?.[index] || 'Image description unavailable';
         
         container.appendChild(img);
         container.appendChild(promptDiv);
