@@ -31,6 +31,11 @@ function showArticleDetails(article) {
     // Clear and populate image grid
     imageGrid.innerHTML = '';
     
+    if (!Array.isArray(article.images) || !Array.isArray(article.prompts)) {
+        showError('Invalid article data format');
+        return;
+    }
+
     article.images.forEach((imageUrl, index) => {
         const container = document.createElement('div');
         container.className = 'image-container';
@@ -47,7 +52,7 @@ function showArticleDetails(article) {
         
         const promptDiv = document.createElement('div');
         promptDiv.className = 'image-prompt';
-        promptDiv.textContent = article.prompts?.[index] || 'Image description unavailable';
+        promptDiv.textContent = article.prompts[index] || 'Image description unavailable';
         
         container.appendChild(img);
         container.appendChild(promptDiv);
@@ -114,6 +119,10 @@ function renderArticles(articles) {
     const template = document.getElementById('article-template');
 
     articles.forEach(article => {
+        if (!Array.isArray(article.images) || article.images.length === 0) {
+            return;
+        }
+
         const clone = template.content.cloneNode(true);
         const card = clone.querySelector('.article-card');
         const previewImage = clone.querySelector('.article-preview-image');
