@@ -40,12 +40,14 @@ def generate_image(summary):
             }
         )
         
-        if not output:
+        if not output or not isinstance(output, list) or not output[0]:
             logger.warning("No image was generated, using default image")
             return DEFAULT_IMAGE_URL
             
+        # Convert FileOutput to string URL
+        image_url = str(output[0])
         logger.info("Successfully generated image")
-        return output[0]
+        return image_url
         
     except replicate.exceptions.ReplicateError as e:
         logger.error(f"Replicate API error: {str(e)}")
