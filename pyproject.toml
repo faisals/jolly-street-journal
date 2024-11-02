@@ -12,4 +12,5 @@ dependencies = [
     "anthropic>=0.38.0",
     "replicate>=1.0.3",
     "flask-apscheduler>=1.13.1",
+    "sqlalchemy>=2.0.36",
 ]
