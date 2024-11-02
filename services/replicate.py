@@ -24,12 +24,19 @@ def generate_image(summary):
         client = replicate.Client(api_token=api_token)
         
         output = client.run(
-            "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
+            "faisals/jolly-street-journal:41ff8cf9e035e0837c5a8b1b58bee6b8b5a11d9193914d085ada970484831a27",
             input={
                 "prompt": summary,
-                "negative_prompt": "text, watermark, low quality, blurry",
-                "width": 768,
-                "height": 768,
+                "model": "dev",
+                "lora_scale": 1,
+                "num_outputs": 1,
+                "aspect_ratio": "1:1",
+                "output_format": "webp",
+                "guidance_scale": 3.5,
+                "output_quality": 90,
+                "prompt_strength": 0.8,
+                "extra_lora_scale": 1,
+                "num_inference_steps": 28
             }
         )
         
@@ -42,6 +49,8 @@ def generate_image(summary):
         
     except replicate.exceptions.ReplicateError as e:
         logger.error(f"Replicate API error: {str(e)}")
+        if "Unauthenticated" in str(e):
+            logger.error("Authentication failed - invalid API token")
         return DEFAULT_IMAGE_URL
     except Exception as e:
         logger.error(f"Unexpected error in generate_image: {str(e)}")

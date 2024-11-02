@@ -34,19 +34,42 @@ from services.replicate import generate_image
 def index():
     return render_template('index.html')
 
-@app.route('/api/news/<page>')
+@app.route('/api/news/<int:page>')
 def get_news_page(page):
     try:
         articles = get_news(page)
+        processed_articles = []
+        
         for article in articles:
             try:
-                article['summary'] = get_comic_summary(article['text'])
+                summary = get_comic_summary(article['text'])
+                image_url = generate_image(summary)
+                
+                processed_article = {
+                    'title': article['title'],
+                    'summary': summary,
+                    'image': image_url
+                }
+                processed_articles.append(processed_article)
+                
             except Exception as e:
-                article['summary'] = f"Error generating summary: {str(e)}"
+                logger.error(f"Error processing article: {str(e)}")
+                # Skip failed articles instead of stopping the entire request
+                continue
+                
+        if not processed_articles:
+            return jsonify({
+                "success": False,
+                "error": "No articles could be processed successfully"
+            }), 500
             
-            # Image generation errors are handled within the function now
-            article['image'] = generate_image(article.get('summary', ''))
-            
-        return jsonify({"success": True, "articles": articles})
+        return jsonify({
+            "success": True,
+            "articles": processed_articles
+        })
+        
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)})
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500

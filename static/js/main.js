@@ -25,13 +25,22 @@ async function loadArticles() {
         const response = await fetch(`/api/news/${currentPage}`);
         const data = await response.json();
 
+        if (!response.ok) {
+            throw new Error(data.error || `Server error: ${response.status}`);
+        }
+
         if (!data.success) {
-            throw new Error(data.error || 'Unknown error occurred');
+            throw new Error(data.error || 'Failed to load articles');
         }
 
         const articles = data.articles;
+        if (!Array.isArray(articles)) {
+            throw new Error('Invalid response format');
+        }
+
         if (articles.length === 0) {
             hasMore = false;
+            loadingEl.classList.add('d-none');
             return;
         }
 
@@ -56,6 +65,7 @@ function renderArticles(articles) {
         clone.querySelector('.article-title').textContent = article.title;
         clone.querySelector('.article-summary').textContent = article.summary;
         clone.querySelector('.article-image').src = article.image;
+        clone.querySelector('.article-image').alt = article.title;
         
         container.appendChild(clone);
     });
@@ -69,4 +79,6 @@ window.addEventListener('scroll', () => {
 });
 
 // Initial load
-loadArticles();
+document.addEventListener('DOMContentLoaded', () => {
+    loadArticles();
+});
