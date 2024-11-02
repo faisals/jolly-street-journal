@@ -7,5 +7,5 @@ class Article(db.Model):
     title = db.Column(db.String(500))
     original_text = db.Column(db.Text)
     comic_summary = db.Column(db.Text)
-    image_url = db.Column(db.String(500))
+    image_urls = db.Column(db.Text)  # Store multiple URLs as JSON string
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

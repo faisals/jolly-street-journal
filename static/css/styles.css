@@ -6,8 +6,16 @@
     transform: translateY(-5px);
 }
 
-.card-img-top {
-    height: 200px;
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 4px;
+}
+
+.image-grid img {
+    width: 100%;
+    aspect-ratio: 1;
     object-fit: cover;
 }
 

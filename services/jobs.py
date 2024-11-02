@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from models import db, Article
 from services.guardian import get_news
 from services.claude import get_comic_summary
-from services.replicate import generate_image
+from services.replicate import generate_images
 
 logger = logging.getLogger(__name__)
 
@@ -21,14 +21,14 @@ def fetch_and_process_articles():
                 return
                 
             summary = get_comic_summary(article_data['text'])
-            image_url = generate_image(summary)
+            image_urls = generate_images(summary)
             
             article = Article(
                 guardian_id=article_data['id'],
                 title=article_data['title'],
                 original_text=article_data['text'],
                 comic_summary=summary,
-                image_url=image_url
+                image_urls=image_urls
             )
             
             db.session.add(article)

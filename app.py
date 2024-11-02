@@ -1,5 +1,6 @@
 import os
 import logging
+import json
 from datetime import datetime, timedelta
 from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -92,7 +93,7 @@ def get_news_page(page):
         processed_articles = [{
             'title': article.title,
             'summary': article.comic_summary,
-            'image': article.image_url
+            'images': json.loads(article.image_urls)
         } for article in articles.items]
         
         return jsonify({
