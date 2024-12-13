@@ -2,8 +2,7 @@
 
 A modern news portal that transforms serious news articles into engaging comic-style summaries with AI-generated images. The application fetches the latest news from either The New York Times or The Guardian, processes them using AI to create comic-style summaries, and generates matching comic-strip style images.
 
-[**▶️ Watch the Demo**](jolly-street-journal-4k-original.mp4)
-
+[![Demo Video](video.png)](video.mp4)
 
 ## Features
 
