@@ -1,0 +1,14 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+.env.*
+
+# Replit-specific config files if they contain sensitive info
+.replit
+replit.nix
+
+# Database files (if you want to exclude them)
+instance/*.db
